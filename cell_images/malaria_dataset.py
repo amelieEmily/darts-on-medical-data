@@ -18,8 +18,10 @@ class MalariaImageLabelDataset(Dataset):
                                             on a sample.
         """
         super().__init__()
-        self.parasitized_path = '../input/cell_images/cell_images/Parasitized/'
-        self.uninfected_path = '../input/cell_images/cell_images/Uninfected/'
+        FILE_ABSOLUTE_PATH = os.path.abspath(__file__)
+        cell_images_folder_path = os.path.dirname(FILE_ABSOLUTE_PATH)
+        self.parasitized_path = cell_images_folder_path + '/Parasitized/'
+        self.uninfected_path = cell_images_folder_path + '/Uninfected/'
         self.infected = os.listdir(self.parasitized_path)
         self.uninfected = os.listdir(self.uninfected_path)
         self.transform = transform
