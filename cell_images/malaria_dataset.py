@@ -3,12 +3,13 @@ from PIL import Image
 import torch
 from torch.utils.data import Dataset, DataLoader
 import os
+import random
 ###############################################################################
 
 class MalariaImageLabelDataset(Dataset):
     """A dataset class to retrieve samples of paired images and labels"""
 
-    def __init__(self, shuffle=None, transform=None):
+    def __init__(self, transform=None):
         """
         Args:
             csv (string): Path to the csv file with data
@@ -41,16 +42,3 @@ class MalariaImageLabelDataset(Dataset):
 
         return sample
 
-###############################################################################
-def loadImageToTensor(image_file, transform=None):
-    """Load an image and returns a tensor
-    Args:
-        image_file (string): Path to the image file
-        transform (callable, optional): Optional transform to be applied  on a sample.
-    """
-
-    image = Image.open(image_file)
-    if transform:
-        image = transform(image)
-
-    return image.unsqueeze(0)
