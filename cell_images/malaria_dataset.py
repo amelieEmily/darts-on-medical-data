@@ -20,10 +20,13 @@ class MalariaImageLabelDataset(Dataset):
         super().__init__()
         FILE_ABSOLUTE_PATH = os.path.abspath(__file__)
         cell_images_folder_path = os.path.dirname(FILE_ABSOLUTE_PATH)
+        included_extensions = ['jpg', 'jpeg', 'png']
         self.parasitized_path = cell_images_folder_path + '/Parasitized/'
         self.uninfected_path = cell_images_folder_path + '/Uninfected/'
-        self.infected = os.listdir(self.parasitized_path)
-        self.uninfected = os.listdir(self.uninfected_path)
+        self.infected  = [fn for fn in os.listdir(self.parasitized_path)
+              if any(fn.endswith(ext) for ext in included_extensions)]
+        self.uninfected = [fn for fn in os.listdir(self.uninfected_path)
+              if any(fn.endswith(ext) for ext in included_extensions)]
         self.transform = transform
 
     def __len__(self):
