@@ -34,7 +34,7 @@ class MalariaImageLabelDataset(Dataset):
             idx = idx.tolist()
 
         path = self.parasitized_path + self.infected[idx] if idx < len(self.infected) else self.uninfected_path + self.uninfected[idx - len(self.infected)]
-        label = 'parasitized' if idx < len(self.infected) else 'uninfected'
+        label = 1 if idx < len(self.infected) else 0
         image = Image.open(path)
 
         if self.transform:
@@ -43,4 +43,3 @@ class MalariaImageLabelDataset(Dataset):
         sample = (image, label)
 
         return sample
-
