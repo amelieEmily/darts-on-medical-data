@@ -38,6 +38,7 @@ class MalariaImageLabelDataset(Dataset):
         image = Image.open(path)
 
         if self.transform:
+            print("transformedd!!!!!!")
             image = self.transform(image)
 
         sample = {'image': image, 'label': label}
