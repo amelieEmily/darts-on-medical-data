@@ -33,7 +33,7 @@ class MalariaImageLabelDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        path = self.infected + self.infected if idx < len(self.infected) else self.parasitized_path + self.uninfected
+        path = self.parasitized_path + self.infected[idx] if idx < len(self.infected) else self.uninfected_path + self.uninfected[idx - len(self.infected)]
         label = 'parasitized' if idx < len(self.infected) else 'uninfected'
         image = Image.open(path)
 
