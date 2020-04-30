@@ -9,7 +9,7 @@ import random
 class MalariaImageLabelDataset(Dataset):
     """A dataset class to retrieve samples of paired images and labels"""
 
-    def __init__(self, transform=None):
+    def __init__(self, transform):
         """
         Args:
             csv (string): Path to the csv file with data
