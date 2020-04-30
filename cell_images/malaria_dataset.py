@@ -40,7 +40,7 @@ class MalariaImageLabelDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-        sample = {'image': image, 'label': label}
+        sample = (image, label)
 
         return sample
 
