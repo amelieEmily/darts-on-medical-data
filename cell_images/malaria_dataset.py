@@ -25,7 +25,6 @@ class MalariaImageLabelDataset(Dataset):
         self.uninfected_path = cell_images_folder_path + '/Uninfected/'
         self.infected_paths  = [self.infected_path + fn for fn in os.listdir(self.infected_path)
               if any(fn.endswith(ext) for ext in included_extensions)]
-        print(self.infected_paths)
         self.uninfected_paths = [self.uninfected_path + fn for fn in os.listdir(self.uninfected_path)
               if any(fn.endswith(ext) for ext in included_extensions)]
         self.data = self.infected_paths + self.uninfected_paths
@@ -34,7 +33,7 @@ class MalariaImageLabelDataset(Dataset):
             random.shuffle(self.data)
 
     def __len__(self):
-        return len(self.infected) + len(self.uninfected)
+        return len(self.data)
 
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
