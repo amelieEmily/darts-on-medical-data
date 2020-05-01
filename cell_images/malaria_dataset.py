@@ -23,7 +23,7 @@ class MalariaImageLabelDataset(Dataset):
         included_extensions = ['jpg', 'jpeg', 'png']
         self.infected_path = cell_images_folder_path + '/Parasitized/'
         self.uninfected_path = cell_images_folder_path + '/Uninfected/'
-        self.infected_paths  = [self.infected_path + fn for fn in os.listdir(self.parasitized_path)
+        self.infected_paths  = [self.infected_path + fn for fn in os.listdir(self.infected_path)
               if any(fn.endswith(ext) for ext in included_extensions)]
         self.uninfected_paths = [self.uninfected_path + fn for fn in os.listdir(self.uninfected_path)
               if any(fn.endswith(ext) for ext in included_extensions)]
