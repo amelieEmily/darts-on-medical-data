@@ -1,6 +1,0 @@
-[submodule "RobustDARTS"]
-	path = RobustDARTS
-	url = https://github.com/amelieEmily/RobustDARTS
-[submodule "DR_Detection"]
-	path = DR_Detection
-	url = https://github.com/amelieEmily/DR_Detection
