@@ -6,10 +6,10 @@ from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense,Conv2D,Flatten,Dropout,MaxPool2D
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-import torchvision.transforms as transforms
 import logging
 from keras.applications.resnet50 import ResNet50
 from keras.applications.xception import Xception
+import numpy as np
 
 from tensorflow.python.client import device_lib
 print(device_lib.list_local_devices())
@@ -18,9 +18,9 @@ from keras import backend as K
 K.tensorflow_backend._get_available_gpus()
 
 import keras
-config = tf.ConfigProto( device_count = {'GPU': 1 } )
-sess = tf.Session(config=config)
-keras.backend.set_session(sess)
+config = tf.compat.v1.ConfigProto( device_count = {'GPU': 1 } )
+sess = tf.compat.v1.Session(config=config)
+tf.compat.v1.keras.backend.set_session(sess)
 
 plt.rcParams['figure.figsize'] = (12,7)
 
@@ -29,13 +29,6 @@ plt.rcParams['figure.figsize'] = (12,7)
 import os
 import sys
 
-FILE_ABSOLUTE_PATH = os.path.abspath(__file__)
-cell_images_folder_path = os.path.dirname(FILE_ABSOLUTE_PATH)
-project_path = os.path.dirname(cell_images_folder_path)
-src_path = os.path.join(project_path, 'RobustDARTS', 'src')
-sys.path.append(src_path)
-print(sys.path)
-import utils
 
 
 parser = argparse.ArgumentParser(description='baseline performances based on different traditional architecture.')
@@ -102,8 +95,11 @@ elif args.network == 'resnet18':
     model = ResNet50(weights=None, input_shape=(130,130,3), classes=1)
 elif args.network == 'xception':
     model = Xception(weights=None, input_shape=(130,130,3), classes=1)
+
 model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
 
+logging.info(model.summary())
+# logging.info("param size = %fMB", np.sum(np.prod(v.size()) for v in model.parameters())/1e6)
 
 early = EarlyStopping(monitor='val_loss', patience=2, verbose=1)
 
@@ -111,5 +107,3 @@ model.fit_generator(train,
                     epochs=20,
                     validation_data=validation,
                     callbacks=[early])
-
-logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
