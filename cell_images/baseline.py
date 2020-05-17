@@ -32,7 +32,7 @@ import sys
 
 
 parser = argparse.ArgumentParser(description='baseline performances based on different traditional architecture.')
-parser.add_argument('--network', type=str, default='custom1', help='type of network to run baseline on choose from: custom1, resnet18, xception')
+parser.add_argument('--network', type=str, default='custom1', help='type of network to run baseline on choose from: custom1, resnet50, xception')
 
 args = parser.parse_args()
 
@@ -91,10 +91,10 @@ if args.network == 'custom1':
     model.add(Dense(128,activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(1,activation='sigmoid'))
-elif args.network == 'resnet18':
-    model = ResNet50(weights='imagenet', input_shape=(130,130,3), classes=1)
+elif args.network == 'resnet50':
+    model = ResNet50(include_top=False, weights='imagenet', input_shape=(130,130,3), classes=1)
 elif args.network == 'xception':
-    model = Xception(weights='imagenet', input_shape=(130,130,3), classes=1)
+    model = Xception(include_top=False, weights='imagenet', input_shape=(130,130,3), classes=1)
 
 model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
 
