@@ -3,13 +3,13 @@ import argparse
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense,Conv2D,Flatten,Dropout,MaxPool2D
+from tensorflow.keras.layers import Dense,Conv2D,Flatten,Dropout,MaxPool2D,GlobalAveragePooling2D
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import logging
-from keras.applications.resnet50 import ResNet50
-from keras.applications.xception import Xception
-import numpy as np
+from tensorflow.keras.applications.resnet50 import ResNet50
+from tensorflow.keras.applications.xception import Xception
+from tensorflow.keras import optimizers, Model
 
 from tensorflow.python.client import device_lib
 print(device_lib.list_local_devices())
@@ -91,12 +91,32 @@ if args.network == 'custom1':
     model.add(Dense(128,activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(1,activation='sigmoid'))
+    model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
 elif args.network == 'resnet50':
-    model = ResNet50(include_top=False, weights='imagenet', input_shape=(130,130,3), classes=1)
-elif args.network == 'xception':
-    model = Xception(include_top=False, weights='imagenet', input_shape=(130,130,3), classes=1)
+    inc_model = ResNet50(include_top=False, weights='imagenet', input_shape=(130,130,3))
+    x = inc_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(1024, activation="relu")(x)
+    x = Dropout(0.5)(x)
+    x = Dense(512, activation="relu")(x)
+    predictions = Dense(1, activation='sigmoid')(x)
 
-model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
+    model = Model(inputs=inc_model.input, outputs=predictions)
+
+    model.compile(loss='binary_crossentropy',optimizer=optimizers.SGD(lr=0.0001, momentum=0.9),metrics=['accuracy'])
+elif args.network == 'xception':
+    inc_model = Xception(include_top=True, weights=None, input_shape=(130,130,3), classes=1)
+    x = inc_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(1024, activation="relu")(x)
+    x = Dropout(0.5)(x)
+    x = Dense(512, activation="relu")(x)
+    predictions = Dense(1, activation='sigmoid')(x)
+
+    model = Model(inputs=inc_model.input, outputs=predictions)
+    model.compile(loss='binary_crossentropy',optimizer=optimizers.SGD(lr=0.0001, momentum=0.9),metrics=['accuracy'])
+
+
 
 logging.info(model.summary())
 # logging.info("param size = %fMB", np.sum(np.prod(v.size()) for v in model.parameters())/1e6)
