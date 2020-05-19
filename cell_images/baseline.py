@@ -105,7 +105,7 @@ elif args.network == 'resnet50':
 
     model.compile(loss='binary_crossentropy',optimizer=optimizers.SGD(lr=0.0001, momentum=0.9),metrics=['accuracy'])
 elif args.network == 'xception':
-    inc_model = Xception(include_top=True, weights=None, input_shape=(130,130,3), classes=1)
+    inc_model = Xception(include_top=False, weights='imagenet', input_shape=(130,130,3))
     x = inc_model.output
     x = GlobalAveragePooling2D()(x)
     x = Dense(1024, activation="relu")(x)
