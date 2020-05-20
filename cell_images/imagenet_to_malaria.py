@@ -5,14 +5,10 @@ import torch
 import utils
 import codecs
 import json
-import glob
-import random
 import logging
 import argparse
 import torch.nn as nn
-import genotypes
 import torch.utils
-import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torch.backends.cudnn as cudnn
 from torch.optim.lr_scheduler import CosineAnnealingLR
