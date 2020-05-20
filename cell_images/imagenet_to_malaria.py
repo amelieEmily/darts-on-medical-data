@@ -12,9 +12,13 @@ import torch.utils
 import torchvision.transforms as transforms
 import torch.backends.cudnn as cudnn
 from torch.optim.lr_scheduler import CosineAnnealingLR
-
-
 from torch.autograd import Variable
+
+FILE_ABSOLUTE_PATH = os.path.abspath(__file__)
+cell_images_path = os.path.dirname(FILE_ABSOLUTE_PATH)
+robustdarts_src_evaluation_path = os.path.join(project_path, 'DR_Detection', 'dataset', 'evaluation')
+sys.path.append(robustdarts_src_evaluation_path)
+
 from model import NetworkImageNet as Network
 from malaria_dataset import MalariaImageLabelDataset
 
