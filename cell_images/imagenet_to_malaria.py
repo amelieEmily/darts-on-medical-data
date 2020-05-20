@@ -26,8 +26,6 @@ from malaria_dataset import MalariaImageLabelDataset
 
 TORCH_VERSION = torch.__version__
 
-if TORCH_VERSION.startswith('1'):
-    device = torch.device('cuda:{}'.format(args.gpu))
 
 parser = argparse.ArgumentParser("imagenet")
 parser.add_argument('--data', type=str, default='../data/imagenet/', help='location of the data corpus')
@@ -49,6 +47,9 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO,
 
 CLASSES = 2
 
+
+if TORCH_VERSION.startswith('1'):
+    device = torch.device('cuda:{}'.format(args.gpu))
 
 def main():
   if not torch.cuda.is_available():
