@@ -16,6 +16,7 @@ from torch.autograd import Variable
 
 FILE_ABSOLUTE_PATH = os.path.abspath(__file__)
 cell_images_path = os.path.dirname(FILE_ABSOLUTE_PATH)
+project_path = os.path.dirname(cell_images_path)
 robustdarts_src_evaluation_path = os.path.join(project_path, 'DR_Detection', 'dataset', 'evaluation')
 sys.path.append(robustdarts_src_evaluation_path)
 
