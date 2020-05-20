@@ -22,6 +22,10 @@ from torch.autograd import Variable
 from model import NetworkImageNet as Network
 from malaria_dataset import MalariaImageLabelDataset
 
+TORCH_VERSION = torch.__version__
+
+if TORCH_VERSION.startswith('1'):
+    device = torch.device('cuda:{}'.format(args.gpu))
 
 parser = argparse.ArgumentParser("imagenet")
 parser.add_argument('--data', type=str, default='../data/imagenet/', help='location of the data corpus')
@@ -93,7 +97,7 @@ def main():
   )
 
   scheduler = CosineAnnealingLR(
-    optimizer, float(args.epochs)
+    optimizer, float(args.epochs))
 
   criterion = nn.CrossEntropyLoss()
   criterion = criterion.cuda()
@@ -132,6 +136,70 @@ def main():
   logging.info('valid_acc_top1 %f', valid_acc_top1)
   logging.info('valid_acc_top5 %f', valid_acc_top5)
 
+def train(train_queue, model, criterion, optimizer):
+  objs = utils.AvgrageMeter()
+  top1 = utils.AvgrageMeter()
+  top5 = utils.AvgrageMeter()
+  model.train()
+
+  for step, input_target in enumerate(train_queue):
+
+    if args.dataset == 'dr-detection':
+        input = input_target['image']
+        target = input_target['label']
+    else:
+        input = input_target[0]
+        target = input_target[1]
+
+    if TORCH_VERSION in ['1.0.1', '1.1.0']:
+      input = input.to(device)
+      target = target.to(device)
+    else:
+      input = Variable(input).cuda()
+      target = Variable(target).cuda()
+
+    optimizer.zero_grad()
+    logits, logits_aux = model(input)
+    loss = criterion(logits, target)
+    if args.auxiliary:
+      loss_aux = criterion(logits_aux, target)
+      loss += args.auxiliary_weight*loss_aux
+    loss.backward()
+
+    if TORCH_VERSION.startswith('1'):
+      nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
+    else:
+      nn.utils.clip_grad_norm(model.parameters(), args.grad_clip)
+    optimizer.step()
+
+    if args.dataset == 'malaria':
+      prec1 = utils.accuracy(logits, target)
+      prec1 = prec1[0]
+      n = input.size(0)
+      if TORCH_VERSION.startswith('1'):
+        objs.update(loss.item(), n)
+        top1.update(prec1.item(), n)
+      else:
+        objs.update(loss.data[0], n)
+        top1.update(prec1.data[0], n)
+    else:
+      prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
+      n = input.size(0)
+      if TORCH_VERSION.startswith('1'):
+        objs.update(loss.item(), n)
+        top1.update(prec1.item(), n)
+        top5.update(prec5.item(), n)
+      else:
+        objs.update(loss.data[0], n)
+        top1.update(prec1.data[0], n)
+        top5.update(prec5.data[0], n)
+
+    if step % args.report_freq == 0:
+      logging.info('train %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
+      if args.debug:
+        break
+
+  return top1.avg, objs.avg
 
 def infer(valid_queue, model, criterion):
   objs = utils.AvgrageMeter()
