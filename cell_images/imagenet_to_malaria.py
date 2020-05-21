@@ -123,7 +123,7 @@ def main():
   darts_model = Network(args.init_channels, 1000, args.layers, args.auxiliary, genotype)
   #darts_model = darts_model.cuda()
   darts_model.load_state_dict(torch.load(args.model_path, map_location='cuda:0')['state_dict'])
-  extension = NetworkExtension(1, args.auxiliary)
+  extension = NetworkExtension(CLASSES, args.auxiliary)
   model = nn.ModuleList()
   model.append(darts_model)
   model.append(extension)
