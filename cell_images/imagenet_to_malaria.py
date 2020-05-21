@@ -1,5 +1,6 @@
 import os
 import sys
+import yaml
 import numpy as np
 import torch
 import utils
@@ -13,7 +14,6 @@ import torchvision.transforms as transforms
 import torch.backends.cudnn as cudnn
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.autograd import Variable
-from collections import namedtuple
 
 
 FILE_ABSOLUTE_PATH = os.path.abspath(__file__)
@@ -31,6 +31,11 @@ TORCH_VERSION = torch.__version__
 
 parser = argparse.ArgumentParser("imagenet")
 parser.add_argument('--data', type=str, default='../data/imagenet/', help='location of the data corpus')
+parser.add_argument('--space', type=str, default='s1', help='space index')
+parser.add_argument('--dataset', type=str, default='cifar10', help='dataset')
+parser.add_argument('--search_wd', type=float, default=3e-4, help='weight decay used during search')
+parser.add_argument('--search_dp', type=float, default=0.2, help='drop path probability used during search')
+
 parser.add_argument('--batch_size', type=int, default=128, help='batch size')
 parser.add_argument('--report_freq', type=float, default=100, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
@@ -41,6 +46,10 @@ parser.add_argument('--auxiliary', action='store_true', default=False, help='use
 parser.add_argument('--drop_path_prob', type=float, default=0, help='drop path probability')
 parser.add_argument('--seed', type=int, default=0, help='random seed')
 parser.add_argument('--arch', type=str, default='DARTS', help='which architecture to use')
+
+parser.add_argument('--archs_config_file', type=str, default='../RobustDARTS/experiments/search_logs/results_arch.yaml',
+                    help='search logs directory')
+
 args = parser.parse_args()
 
 log_format = '%(asctime)s %(message)s'
@@ -49,7 +58,6 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO,
 
 CLASSES = 2
 
-Genotype = namedtuple('Genotype', 'normal normal_concat reduce reduce_concat')
 
 if TORCH_VERSION.startswith('1'):
     device = torch.device('cuda:{}'.format(args.gpu))
@@ -68,7 +76,18 @@ def main():
   logging.info('gpu device = %d' % args.gpu)
   logging.info("args = %s", args)
 
-  genotype = eval("genotypes.%s" % args.arch)
+  if args.dataset == 'dr-detection':
+    configuration = '_'.join([args.space, 'cifar10'])
+  else:
+    configuration = '_'.join([args.space, args.dataset])
+  settings\
+    = '_'.join([str(args.search_dp), str(args.search_wd)])
+  with open(args.archs_config_file, 'r') as f:
+    cfg = yaml.load(f, Loader=yaml.Loader)
+    arch = dict(cfg)[configuration][settings][args.search_task_id]
+
+  print(arch)
+  genotype = eval(arch)
   model = Network(args.init_channels, CLASSES, args.layers, args.auxiliary, genotype)
   model = model.cuda()
   model.load_state_dict(torch.load(args.model_path)['state_dict'])
