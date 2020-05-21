@@ -205,6 +205,7 @@ def train(train_queue, model, criterion, optimizer):
       target = Variable(target).cuda()
 
     optimizer.zero_grad()
+    print("input: ", input)
     logits, logits_aux = model(input)
     loss = criterion(logits, target)
     if args.auxiliary:
