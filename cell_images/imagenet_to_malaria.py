@@ -105,18 +105,17 @@ def main():
   #
   # print(arch)
   genotype = Genotype(normal=[('sep_conv_3x3', 0), ('sep_conv_3x3', 1), ('sep_conv_3x3', 0), ('sep_conv_3x3', 1), ('sep_conv_3x3', 1), ('skip_connect', 0), ('skip_connect', 0), ('dil_conv_3x3', 2)], normal_concat=[2, 3, 4, 5], reduce=[('max_pool_3x3', 0), ('max_pool_3x3', 1), ('skip_connect', 2), ('max_pool_3x3', 1), ('max_pool_3x3', 0), ('skip_connect', 2), ('skip_connect', 2), ('max_pool_3x3', 1)], reduce_concat=[2, 3, 4, 5])
-  model = Network(args.init_channels, 1000, args.layers, args.auxiliary, genotype)
-  model = model.cuda()
-  model.load_state_dict(torch.load(args.model_path, map_location='cuda:0')['state_dict'])
+  darts_model = Network(args.init_channels, 1000, args.layers, args.auxiliary, genotype)
+  #darts_model = darts_model.cuda()
+  darts_model.load_state_dict(torch.load(args.model_path, map_location='cuda:0')['state_dict'])
   model = nn.Sequential(
-    model,
+    darts_model,
     nn.Linear(1000,1),
     nn.ReLU()
   )
+  model = model.cuda()
 
   logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
-
-
 
   train_transform = transforms.Compose([
       transforms.Resize(100),
@@ -154,7 +153,7 @@ def main():
 
   for epoch in range(args.epochs):
     logging.info('epoch %d lr %e', epoch, scheduler.get_lr()[0])
-    model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
+    darts_model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
     # training
     train_acc, train_obj = train(train_queue, model, criterion, optimizer)
@@ -178,7 +177,7 @@ def main():
 
   utils.write_yaml_results_eval(args, args.results_test, 100-valid_acc)
 
-  model.drop_path_prob = args.drop_path_prob
+  darts_model.drop_path_prob = args.drop_path_prob
   valid_acc_top1, valid_acc_top5, valid_obj = infer(valid_queue, model, criterion)
   logging.info('valid_acc_top1 %f', valid_acc_top1)
   logging.info('valid_acc_top5 %f', valid_acc_top5)
