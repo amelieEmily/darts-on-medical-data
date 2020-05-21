@@ -37,18 +37,35 @@ parser.add_argument('--dataset', type=str, default='cifar10', help='dataset')
 parser.add_argument('--search_wd', type=float, default=3e-4, help='weight decay used during search')
 parser.add_argument('--search_dp', type=float, default=0.2, help='drop path probability used during search')
 
-parser.add_argument('--batch_size', type=int, default=128, help='batch size')
 parser.add_argument('--report_freq', type=float, default=100, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--init_channels', type=int, default=48, help='num of init channels')
 parser.add_argument('--layers', type=int, default=14, help='total number of layers')
 parser.add_argument('--model_path', type=str, default='EXP/model.pt', help='path of pretrained model')
+
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
+parser.add_argument('--auxiliary_weight', type=float, default=0.4, help='weight for auxiliary loss')
+
 parser.add_argument('--drop_path_prob', type=float, default=0, help='drop path probability')
 parser.add_argument('--seed', type=int, default=0, help='random seed')
 parser.add_argument('--arch', type=str, default='DARTS', help='which architecture to use')
 
 parser.add_argument('--search_task_id', type=int, default=1, help='SLURM_ARRAY_TASK_ID number during search')
+parser.add_argument('--task_id', type=int, default=1, help='SLURM_ARRAY_TASK_ID number')
+
+parser.add_argument('--learning_rate', type=float, default=0.025, help='init learning rate')
+parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
+parser.add_argument('--weight_decay', type=float, default=3e-4, help='weight decay')
+parser.add_argument('--epochs', type=int, default=600, help='num of training epochs')
+parser.add_argument('--batch_size', type=int, default=32, help='batch size')
+
+# logging options
+parser.add_argument('--debug', action='store_true', default=False, help='use one-step unrolled validation loss')
+parser.add_argument('--save', type=str, default='experiments/eval_logs', help='log directory name')
+parser.add_argument('--archs_config_file', type=str, default='./experiments/search_logs/results_arch.yaml',
+                    help='search logs directory')
+parser.add_argument('--results_test', type=str, default='results_perf', help='filename where to write test errors')
+parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
 
 parser.add_argument('--archs_config_file', type=str, default='../RobustDARTS/experiments/search_logs/results_arch.yaml',
                     help='search logs directory')
