@@ -153,7 +153,6 @@ def main():
                 'valid_loss': []}
 
   for epoch in range(args.epochs):
-    scheduler.step()
     logging.info('epoch %d lr %e', epoch, scheduler.get_lr()[0])
     model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
@@ -165,6 +164,7 @@ def main():
     valid_acc, valid_obj = infer(valid_queue, model, criterion)
     logging.info('valid_acc %f', valid_acc)
 
+    scheduler.step()
     # update the errors dictionary
     errors_dict['train_acc'].append(100 - train_acc)
     errors_dict['train_loss'].append(train_obj)
