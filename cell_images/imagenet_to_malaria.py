@@ -118,8 +118,7 @@ def main():
   logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
   train_transform = transforms.Compose([
-      transforms.Resize(100),
-      transforms.RandomCrop(64),  # 224
+      transforms.Resize(130),
       transforms.RandomHorizontalFlip(),
       transforms.RandomVerticalFlip(),
       transforms.ToTensor(),
@@ -152,7 +151,7 @@ def main():
                 'valid_loss': []}
 
   for epoch in range(args.epochs):
-    logging.info('epoch %d lr %e', epoch, scheduler.get_lr()[0])
+    logging.info('epoch %d lr %e', epoch, scheduler.get_last_lr()[0])
     darts_model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
     # training
