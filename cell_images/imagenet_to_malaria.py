@@ -23,7 +23,6 @@ cell_images_path = os.path.dirname(FILE_ABSOLUTE_PATH)
 project_path = os.path.dirname(cell_images_path)
 robustdarts_src_evaluation_path = os.path.join(project_path, 'RobustDARTS', 'src', 'evaluation')
 sys.path.append(robustdarts_src_evaluation_path)
-print(sys.path)
 
 from model import NetworkImageNet as Network
 from malaria_dataset import MalariaImageLabelDataset
@@ -224,10 +223,6 @@ def train(train_queue, model, criterion, optimizer):
       target = Variable(target).cuda()
 
     optimizer.zero_grad()
-    print(type(input))
-    print(type(target))
-    print(input.size())
-    print(target.dim())
     logits, logits_aux = model(input)
     loss = criterion(logits, target)
     if args.auxiliary:
@@ -240,7 +235,6 @@ def train(train_queue, model, criterion, optimizer):
     else:
       nn.utils.clip_grad_norm(model.parameters(), args.grad_clip)
     optimizer.step()
-    print("dataset:", args.dataset)
     if args.dataset == 'malaria':
       prec1 = utils.accuracy(logits, target)
       prec1 = prec1[0]
