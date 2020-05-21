@@ -61,4 +61,4 @@ class MalariaImageLabelDataset(Dataset):
 
         sample = (image, label)
 
-        return np.array(sample)
+        return sample
