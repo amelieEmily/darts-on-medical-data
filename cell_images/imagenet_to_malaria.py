@@ -47,6 +47,8 @@ parser.add_argument('--drop_path_prob', type=float, default=0, help='drop path p
 parser.add_argument('--seed', type=int, default=0, help='random seed')
 parser.add_argument('--arch', type=str, default='DARTS', help='which architecture to use')
 
+parser.add_argument('--search_task_id', type=int, default=1, help='SLURM_ARRAY_TASK_ID number during search')
+
 parser.add_argument('--archs_config_file', type=str, default='../RobustDARTS/experiments/search_logs/results_arch.yaml',
                     help='search logs directory')
 
