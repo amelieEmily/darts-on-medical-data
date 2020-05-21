@@ -79,18 +79,18 @@ def main():
   logging.info('gpu device = %d' % args.gpu)
   logging.info("args = %s", args)
 
-  if args.dataset == 'dr-detection':
-    configuration = '_'.join([args.space, 'cifar10'])
-  else:
-    configuration = '_'.join([args.space, args.dataset])
-  settings\
-    = '_'.join([str(args.search_dp), str(args.search_wd)])
-  with open(args.archs_config_file, 'r') as f:
-    cfg = yaml.load(f, Loader=yaml.Loader)
-    arch = dict(cfg)[configuration][settings][args.search_task_id]
-
-  print(arch)
-  genotype = eval(arch)
+  # if args.dataset == 'dr-detection':
+  #   configuration = '_'.join([args.space, 'cifar10'])
+  # else:
+  #   configuration = '_'.join([args.space, args.dataset])
+  # settings\
+  #   = '_'.join([str(args.search_dp), str(args.search_wd)])
+  # with open(args.archs_config_file, 'r') as f:
+  #   cfg = yaml.load(f, Loader=yaml.Loader)
+  #   arch = dict(cfg)[configuration][settings][args.search_task_id]
+  #
+  # print(arch)
+  genotype = Genotype(normal=[('sep_conv_3x3', 0), ('sep_conv_3x3', 1), ('sep_conv_3x3', 0), ('sep_conv_3x3', 1), ('sep_conv_3x3', 1), ('skip_connect', 0), ('skip_connect', 0), ('dil_conv_3x3', 2)], normal_concat=[2, 3, 4, 5], reduce=[('max_pool_3x3', 0), ('max_pool_3x3', 1), ('skip_connect', 2), ('max_pool_3x3', 1), ('max_pool_3x3', 0), ('skip_connect', 2), ('skip_connect', 2), ('max_pool_3x3', 1)], reduce_concat=[2, 3, 4, 5])
   model = Network(args.init_channels, CLASSES, args.layers, args.auxiliary, genotype)
   model = model.cuda()
   model.load_state_dict(torch.load(args.model_path, map_location='cuda:0')['state_dict'])
