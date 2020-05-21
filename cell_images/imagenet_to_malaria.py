@@ -15,6 +15,7 @@ import torch.backends.cudnn as cudnn
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.autograd import Variable
 from utils import Genotype
+import torch.nn.functional as F
 
 
 FILE_ABSOLUTE_PATH = os.path.abspath(__file__)
@@ -79,6 +80,22 @@ CLASSES = 2
 if TORCH_VERSION.startswith('1'):
     device = torch.device('cuda:{}'.format(args.gpu))
 
+class NetworkExtension(nn.Module):
+
+  def __init__(self, num_classes, auxiliary):
+    super(NetworkExtension, self).__init__()
+    self._auxiliary = auxiliary
+    self.classifier = nn.Linear(1000,num_classes)
+
+  def forward(self, logits_logits_aux):
+    logits = logits_logits_aux[0]
+    logits_aux = logits_logits_aux[1]
+    if self._auxiliary and self.training:
+      logits_aux = F.relu(self.classifier(logits_aux))
+    logits = F.relu(self.classifier(logits))
+    return logits, logits_aux
+
+
 def main():
   if not torch.cuda.is_available():
     logging.info('no gpu device available')
@@ -105,13 +122,13 @@ def main():
   #
   # print(arch)
   genotype = Genotype(normal=[('sep_conv_3x3', 0), ('sep_conv_3x3', 1), ('sep_conv_3x3', 0), ('sep_conv_3x3', 1), ('sep_conv_3x3', 1), ('skip_connect', 0), ('skip_connect', 0), ('dil_conv_3x3', 2)], normal_concat=[2, 3, 4, 5], reduce=[('max_pool_3x3', 0), ('max_pool_3x3', 1), ('skip_connect', 2), ('max_pool_3x3', 1), ('max_pool_3x3', 0), ('skip_connect', 2), ('skip_connect', 2), ('max_pool_3x3', 1)], reduce_concat=[2, 3, 4, 5])
-  darts_model = Network(args.init_channels, 1000, args.layers, args.auxiliary, genotype)
+  model = Network(args.init_channels, 1000, args.layers, args.auxiliary, genotype)
   #darts_model = darts_model.cuda()
-  darts_model.load_state_dict(torch.load(args.model_path, map_location='cuda:0')['state_dict'])
+  model.load_state_dict(torch.load(args.model_path, map_location='cuda:0')['state_dict'])
+  extension = NetworkExtension(1, args.auxiliary)
   model = nn.Sequential(
-    darts_model,
-    nn.Linear(1000,1),
-    nn.ReLU()
+    model,
+    extension
   )
   model = model.cuda()
 
@@ -188,6 +205,7 @@ def train(train_queue, model, criterion, optimizer):
   top5 = utils.AvgrageMeter()
   model.train()
 
+  layer_to_attach = nn.Linear(1000,1)
   for step, input_target in enumerate(train_queue):
 
     if args.dataset == 'dr-detection':
