@@ -14,10 +14,7 @@ import torchvision.transforms as transforms
 import torch.backends.cudnn as cudnn
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.autograd import Variable
-from collections import namedtuple
-
-
-Genotype = namedtuple('Genotype', 'normal normal_concat reduce reduce_concat')
+from utils import Genotype
 
 
 FILE_ABSOLUTE_PATH = os.path.abspath(__file__)
