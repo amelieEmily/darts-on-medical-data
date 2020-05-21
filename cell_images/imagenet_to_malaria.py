@@ -37,7 +37,6 @@ parser.add_argument('--dataset', type=str, default='cifar10', help='dataset')
 parser.add_argument('--search_wd', type=float, default=3e-4, help='weight decay used during search')
 parser.add_argument('--search_dp', type=float, default=0.2, help='drop path probability used during search')
 
-parser.add_argument('--report_freq', type=float, default=100, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--init_channels', type=int, default=48, help='num of init channels')
 parser.add_argument('--layers', type=int, default=14, help='total number of layers')
