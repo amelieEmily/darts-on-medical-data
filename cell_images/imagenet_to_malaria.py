@@ -126,10 +126,9 @@ def main():
   #darts_model = darts_model.cuda()
   darts_model.load_state_dict(torch.load(args.model_path, map_location='cuda:0')['state_dict'])
   extension = NetworkExtension(1, args.auxiliary)
-  model = nn.Sequential(
-    darts_model,
-    extension
-  )
+  model = nn.ModuleList()
+  model.append(darts_model)
+  model.append(extension)
   model = model.cuda()
 
   logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
@@ -281,11 +280,29 @@ def infer(valid_queue, model, criterion):
     logits, _ = model(input)
     loss = criterion(logits, target)
 
-    prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
-    n = input.size(0)
-    objs.update(loss.data[0], n)
-    top1.update(prec1.data[0], n)
-    top5.update(prec5.data[0], n)
+
+
+    if args.dataset == 'malaria':
+      prec1 = utils.accuracy(logits, target)
+      prec1 = prec1[0]
+      n = input.size(0)
+      if TORCH_VERSION.startswith('1'):
+        objs.update(loss.item(), n)
+        top1.update(prec1.item(), n)
+      else:
+        objs.update(loss.data[0], n)
+        top1.update(prec1.data[0], n)
+    else:
+      prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
+      n = input.size(0)
+      if TORCH_VERSION.startswith('1'):
+        objs.update(loss.item(), n)
+        top1.update(prec1.item(), n)
+        top5.update(prec5.item(), n)
+      else:
+        objs.update(loss.data[0], n)
+        top1.update(prec1.data[0], n)
+        top5.update(prec5.data[0], n)
 
     if step % args.report_freq == 0:
       logging.info('valid %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
