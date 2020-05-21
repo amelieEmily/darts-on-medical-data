@@ -87,9 +87,7 @@ class NetworkExtension(nn.Module):
     self._auxiliary = auxiliary
     self.classifier = nn.Linear(1000,num_classes)
 
-  def forward(self, logits_logits_aux):
-    logits = logits_logits_aux[0]
-    logits_aux = logits_logits_aux[1]
+  def forward(self, logits, logits_aux):
     if self._auxiliary and self.training:
       logits_aux = torch.sigmoid(self.classifier(logits_aux))
     logits = torch.sigmoid(self.classifier(logits))
