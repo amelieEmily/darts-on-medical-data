@@ -7,6 +7,7 @@ import codecs
 import json
 import logging
 import argparse
+import genotypes
 import torch.nn as nn
 import torch.utils
 import torchvision.transforms as transforms
