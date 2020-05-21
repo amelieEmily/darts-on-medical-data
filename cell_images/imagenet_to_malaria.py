@@ -87,7 +87,9 @@ class NetworkExtension(nn.Module):
     self._auxiliary = auxiliary
     self.classifier = nn.Linear(1000,num_classes)
 
-  def forward(self, logits, logits_aux):
+  def forward(self, logits_logits_aux):
+    logits = logits_logits_aux[0]
+    logits_aux = logits_logits_aux[1]
     if self._auxiliary and self.training:
       logits_aux = torch.sigmoid(self.classifier(logits_aux))
     logits = torch.sigmoid(self.classifier(logits))
@@ -124,9 +126,7 @@ def main():
   #darts_model = darts_model.cuda()
   darts_model.load_state_dict(torch.load(args.model_path, map_location='cuda:0')['state_dict'])
   extension = NetworkExtension(CLASSES, args.auxiliary)
-  model = nn.ModuleList()
-  model.append(darts_model)
-  model.append(extension)
+  model = nn.Sequential(darts_model, extension)
   model = model.cuda()
 
   logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
