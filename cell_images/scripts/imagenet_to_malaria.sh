@@ -10,4 +10,4 @@ source /vol/bitbucket/ys3316/darts-on-medical-data/cell_images/venv/bin/activate
 TERM=vt100
 /usr/bin/nvidia-smi
 uptime
-python imagenet_to_malaria.py --dataset malaria --search_wd 0.0009 --search_dp 0.0 --auxiliary --model_path imagenet_model.pt
+python imagenet_to_malaria.py --dataset malaria --search_wd 0.0009 --search_dp 0.0 --auxiliary --model_path imagenet_model.pt --dataset malaria
