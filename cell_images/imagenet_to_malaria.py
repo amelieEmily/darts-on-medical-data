@@ -91,8 +91,8 @@ class NetworkExtension(nn.Module):
     logits = logits_logits_aux[0]
     logits_aux = logits_logits_aux[1]
     if self._auxiliary and self.training:
-      logits_aux = F.relu(self.classifier(logits_aux))
-    logits = F.relu(self.classifier(logits))
+      logits_aux = F.sigmoid(self.classifier(logits_aux))
+    logits = F.sigmoid(self.classifier(logits))
     return logits, logits_aux
 
 
