@@ -118,7 +118,8 @@ def main():
   logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
   train_transform = transforms.Compose([
-      transforms.Resize(130),
+      transforms.Resize(256),
+      transforms.CenterCrop(224),
       transforms.RandomHorizontalFlip(),
       transforms.RandomVerticalFlip(),
       transforms.ToTensor(),
