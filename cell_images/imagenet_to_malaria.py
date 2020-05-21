@@ -122,12 +122,12 @@ def main():
   #
   # print(arch)
   genotype = Genotype(normal=[('sep_conv_3x3', 0), ('sep_conv_3x3', 1), ('sep_conv_3x3', 0), ('sep_conv_3x3', 1), ('sep_conv_3x3', 1), ('skip_connect', 0), ('skip_connect', 0), ('dil_conv_3x3', 2)], normal_concat=[2, 3, 4, 5], reduce=[('max_pool_3x3', 0), ('max_pool_3x3', 1), ('skip_connect', 2), ('max_pool_3x3', 1), ('max_pool_3x3', 0), ('skip_connect', 2), ('skip_connect', 2), ('max_pool_3x3', 1)], reduce_concat=[2, 3, 4, 5])
-  model = Network(args.init_channels, 1000, args.layers, args.auxiliary, genotype)
+  darts_model = Network(args.init_channels, 1000, args.layers, args.auxiliary, genotype)
   #darts_model = darts_model.cuda()
-  model.load_state_dict(torch.load(args.model_path, map_location='cuda:0')['state_dict'])
+  darts_model.load_state_dict(torch.load(args.model_path, map_location='cuda:0')['state_dict'])
   extension = NetworkExtension(1, args.auxiliary)
   model = nn.Sequential(
-    model,
+    darts_model,
     extension
   )
   model = model.cuda()
