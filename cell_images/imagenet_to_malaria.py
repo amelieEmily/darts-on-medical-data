@@ -33,7 +33,7 @@ TORCH_VERSION = torch.__version__
 parser = argparse.ArgumentParser("imagenet")
 parser.add_argument('--data', type=str, default='../data/imagenet/', help='location of the data corpus')
 parser.add_argument('--space', type=str, default='s1', help='space index')
-parser.add_argument('--dataset', type=str, default='cifar10', help='dataset')
+parser.add_argument('--dataset', type=str, default='malaria', help='dataset')
 parser.add_argument('--search_wd', type=float, default=3e-4, help='weight decay used during search')
 parser.add_argument('--search_dp', type=float, default=0.2, help='drop path probability used during search')
 
@@ -305,7 +305,7 @@ def infer(valid_queue, model, criterion):
     if step % args.report_freq == 0:
       logging.info('valid %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
 
-  return top1.avg, top5.avg, objs.avg
+  return top1.avg, objs.avg
 
 
 if __name__ == '__main__':
