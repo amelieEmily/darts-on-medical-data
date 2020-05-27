@@ -61,7 +61,7 @@ parser.add_argument('--batch_size', type=int, default=32, help='batch size')
 
 # logging options
 parser.add_argument('--debug', action='store_true', default=False, help='use one-step unrolled validation loss')
-parser.add_argument('--save', type=str, default='experiments/eval_logs', help='log directory name')
+parser.add_argument('--save', type=str, default='eval_logs', help='log directory name')
 parser.add_argument('--results_test', type=str, default='results_perf', help='filename where to write test errors')
 parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
 
@@ -202,7 +202,6 @@ def train(train_queue, model, criterion, optimizer):
   top5 = utils.AvgrageMeter()
   model.train()
 
-  layer_to_attach = nn.Linear(1000,1)
   for step, input_target in enumerate(train_queue):
 
     if args.dataset == 'dr-detection':

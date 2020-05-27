@@ -76,7 +76,7 @@ validation = image_gen.flow_from_directory('.',
                                      subset="validation",shuffle=False)
 
 
-if args.network == 'custom1':
+if args.network == 'kaggle':
     model = Sequential()
     model.add(Conv2D(filters=32,kernel_size=(3,3),input_shape = (130,130,3),activation='relu'))
     model.add(MaxPool2D(pool_size=(2,2)))
@@ -124,6 +124,5 @@ logging.info(model.summary())
 early = EarlyStopping(monitor='val_loss', patience=2, verbose=1)
 
 model.fit_generator(train,
-                    epochs=20,
-                    validation_data=validation,
-                    callbacks=[early])
+                    epochs=600,
+                    validation_data=validation)

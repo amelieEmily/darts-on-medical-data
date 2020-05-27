@@ -32,7 +32,7 @@ class MalariaImageLabelDataset(Dataset):
         self.data = self.infected_paths + self.uninfected_paths
         self.transform = transform
         random.shuffle(self.data)
-        train_portion = 0.9
+        train_portion = 0.8
         num_train = len(self.data)
         split = int(np.floor(train_portion * num_train))
         self.train_data = self.data[:split]
