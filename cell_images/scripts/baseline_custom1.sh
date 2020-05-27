@@ -10,4 +10,4 @@ source /vol/bitbucket/ys3316/darts-on-medical-data/cell_images/venv/bin/activate
 TERM=vt100 # or TERM=xterm
 /usr/bin/nvidia-smi
 uptime
-python baseline.py --network custom1
+python baseline.py --network kaggle
