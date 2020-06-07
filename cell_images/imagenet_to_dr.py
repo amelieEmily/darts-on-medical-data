@@ -212,6 +212,8 @@ def main():
                    'w', encoding='utf-8') as file:
     json.dump(errors_dict, file, separators=(',', ':'))
 
+  torch.save(model.state_dict(), args.save)
+
   utils.write_yaml_results_eval(args, args.results_test, 100-valid_acc)
 
   darts_model.drop_path_prob = args.drop_path_prob
