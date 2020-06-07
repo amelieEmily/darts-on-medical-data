@@ -161,8 +161,8 @@ def main():
     transforms.ToTensor(),
     transforms.Normalize(mean=DR_DETECTION_MEAN, std=DR_DETECTION_STD),
   ])
-  train_data = ImageLabelDataset(shuffle=True,transform=train_transform)
-  valid_data = ImageLabelDataset(shuffle=True,transform=valid_transform)
+  train_data = ImageLabelDataset(args.train_files,shuffle=True,transform=train_transform)
+  valid_data = ImageLabelDataset(args.valid_files,shuffle=True,transform=valid_transform)
 
   train_queue = torch.utils.data.DataLoader(
     train_data, batch_size=args.batch_size,
